@@ -1,5 +1,6 @@
 var fs = require("fs");
 var virusTotalApi = require('node-virustotal');
+const linereader = require('readline');
 
 function getConf() {
     var confData = fs.readFileSync('./conf.json');
@@ -8,24 +9,39 @@ function getConf() {
 }
 
 //Return hashList
-function readHashFile(url) {
-    var type = undefined;
+async function readHashFile(url) {
+    return new Promise((ok, err) => {
+        var type = undefined;
 
-    if (url.endsWith('txt')) {
-        type = 'txt';
-    } else if (url.endsWith('json')) {
-        type = 'json';
-    } else {
-        return null;
-    }
+        if (url.endsWith('txt')) {
+            type = 'txt';
+        } else if (url.endsWith('json')) {
+            type = 'json';
+        } else {
+            return null;
+        }
 
-    var contentFile = fs.readFileSync(url);
+        if (type == 'txt') {
+            let hashes = [];
 
-    if (type == 'txt') {
+            var lineReader = linereader.createInterface({
+                input: fs.createReadStream(url)
+            });
 
-    } else {
-        return JSON.parse(contentFile);
-    }
+            lineReader.on('line', (line) => {
+                hashes.push(line);
+            });
+
+            lineReader.on('close', () => {
+                ok(hashes);x
+            });
+
+        } else {
+            var contentFile = fs.readFileSync(url);
+            ok(JSON.parse(contentFile));
+        }
+    });
+    
 }
 
 //Remove dupilcate
