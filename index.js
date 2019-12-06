@@ -1,55 +1,7 @@
 var fs = require("fs");
 var virusTotalApi = require('node-virustotal');
-const linereader = require('readline');
+const { Utils } = require('./utils');
 
-function getConf() {
-    var confData = fs.readFileSync('./conf.json');
-
-    return JSON.parse(confData);
-}
-
-//Return hashList
-async function readHashFile(url) {
-    return new Promise((ok, err) => {
-        var type = undefined;
-
-        if (url.endsWith('txt')) {
-            type = 'txt';
-        } else if (url.endsWith('json')) {
-            type = 'json';
-        } else {
-            return null;
-        }
-
-        if (type == 'txt') {
-            let hashes = [];
-
-            var lineReader = linereader.createInterface({
-                input: fs.createReadStream(url)
-            });
-
-            lineReader.on('line', (line) => {
-                hashes.push(line);
-            });
-
-            lineReader.on('close', () => {
-                ok(hashes);x
-            });
-
-        } else {
-            var contentFile = fs.readFileSync(url);
-            ok(JSON.parse(contentFile));
-        }
-    });
-    
-}
-
-//Remove dupilcate
-function removeDuplicates(hashList) {
-    return hashList.filter((item, index, self) => {
-        return index === self.indexOf(item);
-    });
-}
 
 function getVTData(vtapi, hashList, outputDataFileName = 'vtdata.json') {
     var jsonData = [];
@@ -79,12 +31,12 @@ function getVTData(vtapi, hashList, outputDataFileName = 'vtdata.json') {
     });
 }
 
-function main() {
+async function main() {
     var fileUrl = process.argv[2];
 
     console.log('loading hashes from [' + fileUrl + ']');
 
-    var hashList = readHashFile(fileUrl);
+    var hashList = await Utils.readHashFile(fileUrl);
     hashList = removeDuplicates(hashList);
 
     console.log('checking for ' + hashList.length + ' hashes.');
