@@ -45,7 +45,7 @@ async function main() {
 
     let json2xls = require('json2xls');
 
-    let xls = json2xls(reports)
+    let xls = json2xls(reports.filter((report) => {return report != undefined}))
 
     fs.writeFileSync(fileOutXls, xls, 'binary');
 
@@ -72,6 +72,7 @@ function generatePromises(hashList) {
         promises.push(new Promise((ok, err) => {
             vtApi.getFileReport(hash, (report) => {
                 console.log(`[*] Consultando reporte de VT... ${index}/${hashList.length - 1}`);
+
                 let goldData = {
                     positivos: report.positives,
                     negativos: report.total - report.positives,
@@ -79,6 +80,7 @@ function generatePromises(hashList) {
                     mcAfeeDetected: false,
                     mcAfeGWEditionDetected: false,
                     result: undefined,
+                    hash: hash,
                     md5: report.md5,
                     sha256: report.sha256,
                     sha1: report.sha1,
@@ -103,7 +105,10 @@ function generatePromises(hashList) {
         
                 ok(goldData);
             }, errReq => {
-                ok(undefined);
+                console.log(`[*] Error al consultar consultar para el hash ${hash}`);
+                ok({
+                    hash: hash
+                });
             });
         }))
     });
