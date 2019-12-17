@@ -1,6 +1,6 @@
-const { Utils } = require('./utils');
-const fs = require('fs');
+var fs = require("fs");
 var virusTotalApi = require('node-virustotal');
+const { Utils } = require('./utils');
 
 if (!process.argv[2]) {
     console.log("[!] Debes de especificar la ruta de un archivo con extensión .txt que contiene la lista de hashes.!");
@@ -30,7 +30,6 @@ let vtApi = virusTotalApi.MakePublicConnection();
 vtApi.setKey(conf.virusTotalKey);
 vtApi.setDelay(15000);
 
-main();
 
 async function main() {
     console.log(`[*] Leyendo lista de hashes ${FILE_URL}`);
@@ -51,8 +50,10 @@ async function main() {
 
     console.log('[!] Reporte exportado...');
     console.log('Baigon!');
-
 }
+
+main();
+
 
 async function checkHashes(hashList) {
     return new Promise((nice, bad) => {
@@ -71,49 +72,28 @@ function generatePromises(hashList) {
     hashList.forEach((hash, index) => {
         promises.push(new Promise((ok, err) => {
             vtApi.getFileReport(hash, (report) => {
-                console.log(`[*] Consultando reporte de VT... ${index}/${hashList.length - 1}`);
+                console.log(`[*] Consultando reporte de VT. [${index}/${hashList.length - 1}]`);
 
                 let goldData = {
                     positivos: report.positives,
                     negativos: report.total - report.positives,
                     total: report.total,
-                    mcAfeeDetected: false,
-                    mcAfeGWEditionDetected: false,
                     result: undefined,
                     hash: hash,
                     md5: report.md5,
-                    sha256: report.sha256,
                     sha1: report.sha1,
+                    sha256: report.sha256,
                     vtLink: report.permalink
                 }
         
-                if(report.scans['McAfee-GW-Edition']){
-                    goldData.mcAfeGWEditionDetected = report.scans['McAfee-GW-Edition'].detected;
-                    goldData.result = report.scans['McAfee-GW-Edition'].result;
-                }else{
-                    goldData.mcAfeGWEditionDetected = '404'
-                }
-        
-                if(report.scans['McAfee']){
-                    goldData.mcAfeeDetected = report.scans.McAfee.detected;
-                    goldData.result = report.scans.McAfee.result;
-                }else{
-                    goldData.mcAfeeDetected = '404';
-                }
-        
-                //McAfee-GW-Edition || McAfee
-        
                 ok(goldData);
             }, errReq => {
-                console.log(`[*] Consultando reporte de VT... ${index}/${hashList.length - 1}`);
-                console.log(`[!] Error al consultar consultar para el hash ${hash}`);
+                console.log(`[*] Consultando reporte de VT... [${index}/${hashList.length - 1}]`);
+                console.log(`[!] El hash ${hash} no existe en virus total`);
                 ok({
                     positivos: undefined,
                     negativos: undefined,
                     total: undefined,
-                    mcAfeeDetected: undefined,
-                    mcAfeGWEditionDetected: undefined,
-                    result: undefined,
                     hash: hash,
                     md5: undefined,
                     sha256: undefined,
