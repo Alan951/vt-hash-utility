@@ -105,9 +105,20 @@ function generatePromises(hashList) {
         
                 ok(goldData);
             }, errReq => {
-                console.log(`[*] Error al consultar consultar para el hash ${hash}`);
+                console.log(`[*] Consultando reporte de VT... ${index}/${hashList.length - 1}`);
+                console.log(`[!] Error al consultar consultar para el hash ${hash}`);
                 ok({
-                    hash: hash
+                    positivos: undefined,
+                    negativos: undefined,
+                    total: undefined,
+                    mcAfeeDetected: undefined,
+                    mcAfeGWEditionDetected: undefined,
+                    result: undefined,
+                    hash: hash,
+                    md5: undefined,
+                    sha256: undefined,
+                    sha1: undefined,
+                    vtLink: undefined
                 });
             });
         }))
