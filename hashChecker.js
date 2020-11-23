@@ -79,6 +79,7 @@ function generatePromises(hashList) {
                     total: report.total,
                     mcAfeeDetected: false,
                     mcAfeGWEditionDetected: false,
+                    registrado: false,
                     result: undefined,
                     hash: hash,
                     md5: report.md5,
@@ -91,22 +92,25 @@ function generatePromises(hashList) {
                     goldData.mcAfeGWEditionDetected = report.scans['McAfee-GW-Edition'].detected;
                     goldData.result = report.scans['McAfee-GW-Edition'].result;
                 }else{
-                    goldData.mcAfeGWEditionDetected = '404'
+                    goldData.mcAfeGWEditionDetected = false;
                 }
         
                 if(report.scans['McAfee']){
                     goldData.mcAfeeDetected = report.scans.McAfee.detected;
                     goldData.result = report.scans.McAfee.result;
                 }else{
-                    goldData.mcAfeeDetected = '404';
+                    goldData.mcAfeeDetected = false;
                 }
         
                 //McAfee-GW-Edition || McAfee
+                registrado = goldData.mcAfeeDetected && goldData.mcAfeGWEditionDetected;
+                goldData.registrado = registrado;
         
                 ok(goldData);
             }, errReq => {
                 console.log(`[*] Consultando reporte de VT... ${index}/${hashList.length - 1}`);
                 console.log(`[!] Error al consultar consultar para el hash ${hash}`);
+                console.log(errReq);
                 ok({
                     positivos: undefined,
                     negativos: undefined,
