@@ -11,8 +11,6 @@ const banner = `
                                                 By @Alan951 v1.0
 `;
 
-console.log(banner);
-
 const parser = new ArgumentParser({
     description: 'VT - Tools!'
 });
@@ -39,7 +37,12 @@ const checkparserInputGroup = checkparser.add_argument_group({title: 'Metodo de 
 checkparserInputGroup.add_argument('-f', '--file', {help: 'Archivo que contiene hashes IoC', metavar: 'hash'});
 checkparserInputGroup.add_argument('--hash', {help: 'Unico hash', metavar: 'hash', default: true});
 checkparserInputGroup.add_argument('--hashList', {action: ListArgAction, help: 'Hashes separados por coma', nargs: '+', type: 'str', metavar: 'hash'});
+const checkparserOutputGroup = checkparser.add_argument_group({title: 'Metodo de salida'});
+checkparserOutputGroup.add_argument('-c', '--csv', {help: 'Exportar resultado en un CSV', action: 'store_true'});
+checkparserOutputGroup.add_argument('-s', '--stdout', {help: 'Mostrar en terminal', action: 'store_true'});
 checkparser.set_defaults({action: 'check'})
+
+console.log(banner);
 
 const args = parser.parse_args();
 
