@@ -16,6 +16,22 @@ exports.Utils = class {
         });
     }
 
+    static truncHash(hash){
+        if(hash.length > 7){
+            return hash.substring(0,3) + "..." + hash.substring(hash.length - 3, hash.length);
+        }else{
+            return hash;
+        }
+    }
+
+    static trunc(str, max = 14){
+        if(max != undefined && str != undefined && str.length > max){
+            return str.substring(0, max) + "...";
+        }else{
+            return undefined;
+        }
+    }
+
     static readHashFile(url) {
         return new Promise((ok, err) => {
             var type = undefined;

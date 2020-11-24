@@ -27,7 +27,7 @@ try {
 let conf = Utils.getConf();
 
 let vtApi = virusTotalApi.MakePublicConnection();
-vtApi.setKey(conf.virusTotalKey);
+vtApi.setKey(conf.vtkey);
 vtApi.setDelay(15000);
 
 main();

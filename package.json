@@ -1,6 +1,6 @@
 {
   "name": "virustotal-hash-resolver",
-  "version": "1.0",
+  "version": "1.0.0",
   "description": "",
   "main": "index.js",
   "scripts": {
@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "argparse": "^2.0.1",
+    "cliff": "^0.1.10",
     "json2xls": "^0.1.2",
     "node-virustotal": "^2.5.0"
   }
