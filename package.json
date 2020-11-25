@@ -11,7 +11,9 @@
   "dependencies": {
     "argparse": "^2.0.1",
     "cliff": "^0.1.10",
+    "json2csv": "^5.0.5",
     "json2xls": "^0.1.2",
-    "node-virustotal": "^2.5.0"
+    "node-virustotal": "^3.32.0",
+    "terminal-kit": "^1.44.0"
   }
 }

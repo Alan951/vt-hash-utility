@@ -1,5 +1,6 @@
 const linereader = require('readline');
 const fs = require('fs');
+const { RSA_NO_PADDING } = require('constants');
 
 
 exports.Utils = class {
@@ -32,27 +33,28 @@ exports.Utils = class {
         }
     }
 
-    static readHashFile(url) {
+    static async readHashFile(file) {
         return new Promise((ok, err) => {
             var type = undefined;
-    
-            if (url.endsWith('txt')) {
-                type = 'txt';
-            } else if (url.endsWith('json')) {
-                type = 'json';
-            } else {
-                return null;
+
+            try{
+                fs.existsSync(file);    
+            }catch(noExists){
+                err(noExists);
             }
+            
+
+            type = file.endsWith('json') ? 'json' : 'txt';
     
             if (type == 'txt') {
                 let hashes = [];
     
                 var lineReader = linereader.createInterface({
-                    input: fs.createReadStream(url)
+                    input: fs.createReadStream(file)
                 });
     
                 lineReader.on('line', (line) => {
-                    hashes.push(line);
+                    hashes.push(line.trim());
                 });
     
                 lineReader.on('close', () => {
@@ -60,10 +62,15 @@ exports.Utils = class {
                 });
     
             } else {
-                var contentFile = fs.readFileSync(url);
+                var contentFile = fs.readFileSync(file);
                 ok(JSON.parse(contentFile));
             }
         });
         
+    }
+
+    static getDateTimeStr(){
+        let date = new Date();
+        return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" +  date.getHours() + " " + date.getMinutes() + " " + date.getSeconds();
     }
 }

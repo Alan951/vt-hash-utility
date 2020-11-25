@@ -13,6 +13,36 @@
             ],
             "program": "${workspaceFolder}\\vtools.js",
             "args": ["check", "--hashList", "4cae449450c07b7aa74314173c7b00d409eabfe22b86859f3b3acedd66010458", "2d7a648ebe64e536944c011c8dcbb375", "132646a2ad9deac1944be4264da30b01"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "debug file",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\vtools.js",
+            "args": ["check", "--file", "hashes.txt", "-o"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "debug hash",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\vtools.js",
+            "args": ["check", "--hash", "5c81cf8262f9a8b0e100d2a220f7119e54edfc10c4fb906ab7848a015cd12d90"]
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "debug secret",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\vtools.js",
+            "args": ["secret"]
         }
     ]
 }
