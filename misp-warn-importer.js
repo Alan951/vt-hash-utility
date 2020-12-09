@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const sizeof = require('object-sizeof');
+const { Utils } = require('./utils');
 
 exports.MispWarnImporter = class {
 
@@ -20,21 +21,16 @@ exports.MispWarnImporter = class {
                 let list = _lists[idx];
     
                 if((sizeof(list) >= 17825791)){
-                    let templist = _lists[idx]['list'];
-                    let h = Math.round(templist.length / 2);
-                    let newlist = templist.slice(0, h);
-                    let cuttedlist = templist.slice(h + 1);
-                    lists[idx]['list'] = newlist;
-                    let idxNew = lists.push(_lists[idx]) - 1;
-                    lists[idxNew]['list'] = cuttedlist;
+                    let divided = Utils.divideArray(list['list']);
+                    lists[idx]['list'] = divided[0];
+                    lists[lists.push({..._lists[idx]}) - 1]['list'] = divided[1];
+
                     validateSize(lists);
                 }
             }
         }
 
         validateSize(lists);
-
-        
 
         return lists;
     }

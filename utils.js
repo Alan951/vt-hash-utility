@@ -10,6 +10,15 @@ exports.Utils = class {
         return JSON.parse(confData);
     }
 
+    static divideArray(list){
+        let templist = list;
+        let h = Math.round(templist.length / 2);
+        let part1 = templist.slice(0, h);
+        let part2 = templist.slice(h);
+
+        return [part1, part2];
+    }
+
     //Remove dupilcate
     static removeDuplicates(hashList) {
         return hashList.filter((item, index, self) => {

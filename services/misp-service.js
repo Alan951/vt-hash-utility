@@ -5,27 +5,29 @@ class MispService {
 
     constructor(){}
 
-    async init(){
+    async init(opts = {}){
         try{
             this.mongoService = new MongoService();
             await this.mongoService.connect();
+
+            if(opts.drop && await this.collectionMispExists()){
+                console.log('Misp collection dropped');
+                await this.mongoService.getDb().collection('misp').drop();
+            }
             
-            if(await this.collectionMispExists()){
+            if(await this.collectionMispExists() || opts.forceUpdate){
                 console.log('Misp collection encontrado!');
-                this.mongoService.getDb().collection('misp').drop();
+            }else{
+                console.log('Misp collection no existe...');
+                let mispImporter = new MispWarnImporter('E:\\tools\\misp-warninglists');
+                console.log('data importing...');
+                let data = mispImporter.import();
+                console.log('data imported!\nsaving data');
+                for(let item in data){
+                    await this.mongoService.getDb().collection('misp').insertOne(data[item]);
+                }
+                console.log('data saved!');
             }
-            console.log('Misp collection no existe...');
-            let mispImporter = new MispWarnImporter('E:\\tools\\misp-warninglists');
-            console.log('data importing...');
-            let data = mispImporter.import();
-            console.log('data imported!\nsaving data');
-            console.log(data.length);
-            for(let item in data){
-                await this.mongoService.getDb().collection('misp').insertOne(data[item]);
-            }
-            console.log('data saved!');
-                
-            
         }catch(err){
             console.log(err);
         }
@@ -45,18 +47,32 @@ class MispService {
         return false;
     }
 
-    async getMongoService(){
-        return this.mongoService;
+    async findIPAddr(ip){
+        let found = await this.mongoService.getDb().collection('misp').find({'list': `${ip}`}).toArray();
+        found.forEach((_) => console.log(_.name));
+        console.log(`found in ${found.length} records`)
     }
 
+    async findDomain(domain){
+        let found = await this.mongoService.getDb().collection('misp').find({'list': {$regex: `.*${domain}.*`}}).toArray();
+        found.forEach((_) => console.log(_.name));
+        console.log(`found in ${found.length} records`)
+    }
+
+    getMongoService(){
+        return this.mongoService;
+    }
 }
 
 module.exports = new MispService();
 
 async function main(){
     let misp = new MispService();
-    await misp.init();
-    (await misp.getMongoService()).client.close();
+    await misp.init({drop: true});
+    await misp.findIPAddr('8.8.8.8');
+    await misp.findDomain('facebook.com');
+    await misp.getMongoService().client.close();
+    
 }
 
 if(require.main === module){
