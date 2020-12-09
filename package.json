@@ -2,9 +2,9 @@
   "name": "virustotal-hash-resolver",
   "version": "1.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "vtools.js",
   "scripts": {
-    "main": "node index.js"
+    "main": "node vtools.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,7 +13,9 @@
     "cliff": "^0.1.10",
     "json2csv": "^5.0.5",
     "json2xls": "^0.1.2",
+    "mongodb": "^3.6.3",
     "node-virustotal": "^3.32.0",
+    "object-sizeof": "^1.6.1",
     "terminal-kit": "^1.44.0"
   }
 }

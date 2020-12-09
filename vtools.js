@@ -53,17 +53,23 @@ parser.add_argument('-v', '--version', { action: 'version', version: '%(prog)s v
 const subparsers = parser.add_subparsers({ help: "help" });
 
 const checkparser = subparsers.add_parser('check', { help: 'Verificar el/los hash(es) si lo tiene registrado mcfee' });
-const secretparser = subparsers.add_parser('secret');
-secretparser.set_defaults({action: 'secret'});
+//const secretparser = subparsers.add_parser('secret');
+//secretparser.set_defaults({action: 'secret'});
+
 const checkparserInputGroup = checkparser.add_argument_group({ title: 'Metodo de entrada', });
 checkparserInputGroup.add_argument('-f', '--file', { help: 'Archivo que contiene hashes IoC', metavar: 'hash' });
 checkparserInputGroup.add_argument('--hash', { help: 'Unico hash', metavar: 'hash'});
 checkparserInputGroup.add_argument('--hashList', { action: ListArgAction, help: 'Hashes separados por coma', nargs: '+', type: 'str', metavar: 'hash' });
+
 const checkparserOutputGroup = checkparser.add_argument_group({ title: 'Metodo de salida' });
 checkparserOutputGroup.add_argument('-c', '--csv', { help: 'Exportar resultado en formato CSV', action: 'store_true' });
 //checkparserOutputGroup.add_argument('-x', '--xlsx', { help: 'Exportar resultado en formato XLSX', action: 'store_true' });
 checkparserOutputGroup.add_argument('-o', '--output', { help: 'Nombre del archivo resultante', nargs: '?', action: OutputAction});
 checkparser.set_defaults({ action: 'check' });
+
+const misparser = subparsers.add_parser('misp')
+misparser = misparser.add_argument('-i', '--import', {help: 'Importar registros de posibles IoC falsos positivos.'});
+
 
 console.log(banner);
 

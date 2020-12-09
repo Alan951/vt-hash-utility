@@ -43,6 +43,15 @@
             ],
             "program": "${workspaceFolder}\\vtools.js",
             "args": ["secret"]
-        }
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "debug mispwarnimporter",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\services\\misp-service.js",
+        },
     ]
 }
