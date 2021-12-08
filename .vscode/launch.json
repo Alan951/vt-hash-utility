@@ -32,7 +32,7 @@
                 "<node_internals>/**"
             ],
             "program": "${workspaceFolder}\\vtools.js",
-            "args": ["check", "--hash", "5c81cf8262f9a8b0e100d2a220f7119e54edfc10c4fb906ab7848a015cd12d90"]
+            "args": ["check", "--hash", "6a6a632e98e89a20b910961ba898cafb6651e88ee39187585be06496a31d5fc8"]
         },
         {
             "type": "node",

@@ -10,12 +10,12 @@ class MispService {
             this.mongoService = new MongoService();
             await this.mongoService.connect();
 
-            if(opts.drop && await this.collectionMispExists()){
+            if((opts.drop && await this.collectionMispExists()) || opts.forceUpdate && await this.collectionMispExists){
                 console.log('Misp collection dropped');
                 await this.mongoService.getDb().collection('misp').drop();
             }
             
-            if(await this.collectionMispExists() || opts.forceUpdate){
+            if(await this.collectionMispExists()){
                 console.log('Misp collection encontrado!');
             }else{
                 console.log('Misp collection no existe...');
@@ -68,9 +68,10 @@ module.exports = new MispService();
 
 async function main(){
     let misp = new MispService();
-    await misp.init({drop: true});
-    await misp.findIPAddr('8.8.8.8');
-    await misp.findDomain('facebook.com');
+    await misp.init({});
+    let ips = ["13.59.205.66", "54.193.127.66", "54.215.192.52", "34.203.203.23", "139.99.115.204", "5.252.177.25", "5.252.177.21", "204.188.205.176", "51.89.125.18", "167.114.213.199", ]
+    for(idx in ips)
+        await misp.findIPAddr(ips[idx]);
     await misp.getMongoService().client.close();
     
 }

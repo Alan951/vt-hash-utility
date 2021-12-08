@@ -9,7 +9,7 @@ class HashChecker{
             throw new Error('vtkey no se encuentra establecido');
         }
 
-        console.log("[*] VirusTotal Key loaded: " + vtkey)
+        console.log("[*] VirusTotal Key loaded")
 
         if(mode == undefined || mode == 'delayed')
             this.vtApi = virusTotalApi.makeAPI(15000);
@@ -26,12 +26,14 @@ class HashChecker{
             "total",
             "mcAfeeDetected",
             "mcAfeGWEditionDetected",
-            "registrado",
+            "registradoMcAfee",
+            "registradoCrowdstrike",
             "name",
+            "fechaUltimoEscaneo",
             "hash",
             "md5",
-            "sha256",
             "sha1",
+            "sha256",
             "vtLink"
         ]
     }
@@ -59,13 +61,23 @@ class HashChecker{
                     total: attribs['last_analysis_stats']['malicious'] + attribs['last_analysis_stats']['undetected'],
                     mcAfeeDetected: false,
                     mcAfeGWEditionDetected: false,
-                    registrado: false,
+                    crowdstrikeDetected: false,
+                    registradoMcAfee: false,
+                    registradoCrowdstrike: false,
+                    fechaUltimoEscaneo: Utils.timestampToDateStr(attribs['last_analysis_date']),
                     name: undefined,
                     hash: hash,
                     md5: attribs.md5,
                     sha256: attribs.sha256,
                     sha1: attribs.sha1,
                     vtLink: reportVT.links.self
+                }
+
+                if(attribs['last_analysis_results']['CrowdStrike']){
+                    report.registradoCrowdstrike = attribs['last_analysis_results']['CrowdStrike']['category'] == 'malicious' ? true : false;
+                    report.name = attribs['last_analysis_results']['CrowdStrike'].result;
+                }else{
+                    report.crowdstrikeDetected = false;
                 }
         
                 if(attribs['last_analysis_results']['McAfee-GW-Edition']){
@@ -86,53 +98,11 @@ class HashChecker{
                 }
         
                 //McAfee-GW-Edition || McAfee
-                let registrado = report.mcAfeeDetected && report.mcAfeGWEditionDetected;
-                report.registrado = registrado;
+                report.registradoMcAfee = report.mcAfeeDetected || report.mcAfeGWEditionDetected;
         
                 ok(report);
             });
-            /*this.vtApi.getFileReport(hash, (reportVT) => {
-
-                let report = {
-                    positivos: reportVT.positives,
-                    negativos: reportVT.total - reportVT.positives,
-                    total: reportVT.total,
-                    mcAfeeDetected: false,
-                    mcAfeGWEditionDetected: false,
-                    registrado: false,
-                    name: undefined,
-                    hash: hash,
-                    md5: reportVT.md5,
-                    sha256: reportVT.sha256,
-                    sha1: reportVT.sha1,
-                    vtLink: reportVT.permalink
-                }
-        
-                if(reportVT.scans['McAfee-GW-Edition']){
-                    report.mcAfeGWEditionDetected = reportVT.scans['McAfee-GW-Edition'].detected;
-                    report.name = reportVT.scans['McAfee-GW-Edition'].result;
-                }else{
-                    report.mcAfeGWEditionDetected = false;
-                }
-        
-                if(reportVT.scans['McAfee']){
-                    report.mcAfeeDetected = reportVT.scans.McAfee.detected;
-                    if(report.mcAfeGWEditionDetected)
-                        report.name = reportVT.scans.McAfee.result + " / " + report.name
-                    else    
-                        report.name = reportVT.scans.McAfee.result;
-                }else{
-                    report.mcAfeeDetected = false;
-                }
-        
-                //McAfee-GW-Edition || McAfee
-                let registrado = report.mcAfeeDetected && report.mcAfeGWEditionDetected;
-                report.registrado = registrado;
-        
-                ok(report);
-            }, errreportVT => {
-                err(errreportVT);
-            });*/
+            
         });
     }
 

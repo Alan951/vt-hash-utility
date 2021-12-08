@@ -16,22 +16,6 @@ exports.MispWarnImporter = class {
     import(){
         let lists = this._dump(this.searchFiles());
 
-        let validateSize = (_lists) => {
-            for(let idx in _lists){
-                let list = _lists[idx];
-    
-                if((sizeof(list) >= 17825791)){
-                    let divided = Utils.divideArray(list['list']);
-                    lists[idx]['list'] = divided[0];
-                    lists[lists.push({..._lists[idx]}) - 1]['list'] = divided[1];
-
-                    validateSize(lists);
-                }
-            }
-        }
-
-        validateSize(lists);
-
         return lists;
     }
 

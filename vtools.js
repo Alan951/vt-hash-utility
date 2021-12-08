@@ -68,7 +68,9 @@ checkparserOutputGroup.add_argument('-o', '--output', { help: 'Nombre del archiv
 checkparser.set_defaults({ action: 'check' });
 
 const misparser = subparsers.add_parser('misp')
-misparser = misparser.add_argument('-i', '--import', {help: 'Importar registros de posibles IoC falsos positivos.'});
+misparser.add_argument('-u', '--update', {help: 'Eliminar registros y realiza la importanción.', action: 'store_true'});
+misparser.add_argument('-i', '--import', {help: 'Importar registros de posibles IoC falsos positivos.'});
+misparser.add_argument('--ioc', {help: 'Busca IoC en los registros de misp-warninglist.'})
 
 
 console.log(banner);
@@ -97,6 +99,19 @@ async function main() {
 }
 
 function reportToCiff(report){
+    let evalAction = (entry, antivirus) => {
+        if(!entry[antivirus] && entry.error)
+            return 'no encontrado en VT'.grey;
+        else if(!entry[antivirus]){
+            if(entry.positivos <= 10)
+                return 'registrar (?)'.yellow
+            else
+                return entry.positivos <= 15 ? 'registrar'.yellow : 'registrar'.red
+        }
+
+        return 'ningúna'.green
+    }
+
     let mapFn = (r) => {
         return [
             Utils.truncHash(r.hash),
@@ -105,10 +120,10 @@ function reportToCiff(report){
             r.negativos,
             r.mcAfeeDetected,
             r.mcAfeGWEditionDetected,
-            ((x) => {
-                if(x.registrado == undefined && x.error){
-                    return 'no encontrado'.red;
-                }else if(!x.registrado){
+            /*((x) => {
+                if(!x.registradoMcAfee && x.error){
+                    return 'no encontrado en VT'.red;
+                }else if(!x.registradoMcAfee){
                     if(x.positivos <= 10){
                         return 'registrar(?)'.yellow;
                     }else{
@@ -117,12 +132,14 @@ function reportToCiff(report){
                 }
                     
                 return 'ningúna'.green;
-            })(r)
+            })(r),*/
+            evalAction(r, 'registradoMcAfee'),
+            evalAction(r, 'registradoCrowdstrike')
         ]
     }
 
     let rows = [
-        ["hash", "name", "positivos", "negativos", "mcAfee", "mcAfeeGW", "acción"]
+        ["hash", "name", "positivos", "negativos", "mcAfee", "mcAfeeGW", "acción en mcafee", "acción en crodstrike"]
     ];
 
     if(report.length >= 1){
@@ -145,7 +162,7 @@ async function check() {
                 process.exit(1);
             }
         }else{
-            args.output = 'report ' + Utils.getDateTimeStr() + '.csv';
+            args.output = 'vtools report ' + Utils.getDateTimeStr() + '.csv';
         }
     }
 
@@ -187,7 +204,11 @@ async function check() {
                 results.push(result);
             }catch(err){
                 results.push({hash: hash, error: true});
-                console.error('[!] Error with hash: ' + Utils.truncHash(hash), err);
+                if(err['error'] != undefined && err['error']['code'] && err['error']['code'] == "NotFoundError")
+                    console.error('[!] Hash no encontrado en VirusTotal: ' + hash);
+                else{
+                    console.error('[!] Error al consultar hash en VirusTotal: ' + hash , err);
+                }
             }
         }
 

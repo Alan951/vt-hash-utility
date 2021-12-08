@@ -78,8 +78,27 @@ exports.Utils = class {
         
     }
 
+    static dateToStr(date){
+        
+
+        return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" +  date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+    }
+
     static getDateTimeStr(){
         let date = new Date();
         return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate() + "T" +  date.getHours() + " " + date.getMinutes() + " " + date.getSeconds();
+    }
+
+    static timestampToDateStr(timestamp){
+        const dtFormat = new Intl.DateTimeFormat('es-MX', {
+            timeZone: 'UTC',
+            year: 'numeric', month: 'numeric', day: 'numeric',
+            hour: 'numeric', minute: 'numeric', second: 'numeric',
+            hour12: false,
+        })
+
+        return dtFormat.format(new Date(timestamp * 1e3));
+
+        
     }
 }
