@@ -70,7 +70,7 @@ exports.MispWarnImporter = class {
 }
 
 if(require.main === module){
-    let importer = new this.MispWarnImporter('E:\\tools\\misp-warninglists')
+    let importer = new this.MispWarnImporter('C:\\Users\\Jorge Alan\\tools\\misp-warninglists')
     let lists = importer.import();
     lists.forEach(list => console.log(list['name'] + ' - ' + list['list'].length))
 }
