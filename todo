@@ -1,0 +1,5 @@
+bugs:
+    - Cuando el hash no se encuentre en virus total, mostrar leyenda en la tabla output
+
+features:
+    - Añadir columna "acción" en el output
