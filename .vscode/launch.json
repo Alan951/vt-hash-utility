@@ -51,7 +51,16 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\services\\misp-service.js",
+            "program": "${workspaceFolder}\\misp-warn-importer.js",
         },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "debug pg-servie",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "program": "${workspaceFolder}\\services\\misp-pg-service.js",
+        }
     ]
 }

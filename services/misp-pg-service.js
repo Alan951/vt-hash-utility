@@ -45,7 +45,7 @@ class MispPgService {
         }
     }
 
-    async findMisp() {
+    async findIoC(ioc) {
 
     }
 }
@@ -55,6 +55,40 @@ module.exports = new MispPgService()
 async function main(){
     let misp = new MispPgService();
     await misp.init({});
+
+    let importer = new MispWarnImporter("E:\\tools\\misp-warninglists");
+    let lists = importer.import();
+    try{
+        await misp.client.query('begin');
+
+        for(let item in lists){
+            item = lists[item]
+
+            r = await misp.addMisp({
+                name: item.name,
+                type: item.type,
+                description: item.description
+            });
+
+            console.log(r.name + ' added...')
+
+            for(let entry in item.list){
+                entry = item.list[entry];
+
+                rEntry = await misp.addMispEntry(r, {
+                    value: entry,
+                    id_mispwarn_fk: r.id
+                })
+            }
+        }
+    }catch(err){
+        console.log('Error: ' + err);
+        await misp.client.query("rollback");
+    }finally{
+        misp.client.release();
+    }
+
+    /*    
     r = await misp.addMisp({
         name: "test",
         description: "more test",
@@ -69,6 +103,7 @@ async function main(){
     });
 
     console.log(r)
+    */
 
     await misp.service.disconnect();
 
