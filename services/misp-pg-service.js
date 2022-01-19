@@ -56,10 +56,10 @@ async function main(){
     let misp = new MispPgService();
     await misp.init({});
 
-    let importer = new MispWarnImporter("E:\\tools\\misp-warninglists");
+    let importer = new MispWarnImporter('C:\\Users\\Jorge Alan\\tools\\misp-warninglists');
     let lists = importer.import();
     try{
-        await misp.client.query('begin');
+        await misp.client.query('BEGIN');
 
         for(let item in lists){
             item = lists[item]
@@ -83,9 +83,15 @@ async function main(){
         }
     }catch(err){
         console.log('Error: ' + err);
-        await misp.client.query("rollback");
+        await misp.client.query("ROLLBACK");
     }finally{
-        misp.client.release();
+        try{
+            await misp.client.query("COMMIT");
+            await misp.client.release()
+            console.log('Connection released...')
+        }catch(err){
+            console.log('Error: ' + err);
+        }
     }
 
     /*    
